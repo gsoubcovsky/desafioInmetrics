@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "dfd57cba-440b-4464-a86d-feb0b77e1d58",
+		"name": "AdvantageOnlineShopping",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10333106"
+	},
+	"item": [
+		{
+			"name": "Account Service",
+			"item": [
+				{
+					"name": "Login - Get Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Login foi bem-sucedido\", function () {\r",
+									"    pm.expect(jsonData.statusMessage.success).to.be.true;\r",
+									"    pm.expect(jsonData.statusMessage.reason).to.eql(\"Login Successful\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Token JWT foi retornado\", function () {\r",
+									"    pm.expect(jsonData.statusMessage.token).to.be.a(\"string\").and.not.empty;\r",
+									"});\r",
+									"\r",
+									"const json = pm.response.json();\r",
+									"pm.environment.set(\"authToken\", json.statusMessage.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "/",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"gaabz@gmail.com\",\r\n  \"loginPassword\": \"123456@Soub!\",\r\n  \"loginUser\": \"gaabz\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{accountService_endpoint}}",
+							"host": [
+								"{{url}}{{accountService_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Catalog",
+			"item": [
+				{
+					"name": "Products Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"let produtoEncontrado = false;\r",
+									"let precoCorreto = false;\r",
+									"\r",
+									"jsonData.forEach(categoria => {\r",
+									"    if (categoria.products && Array.isArray(categoria.products)) {\r",
+									"        categoria.products.forEach(produto => {\r",
+									"            if (produto.productName === \"Beats Studio 2 Over-Ear Matte Black Headphones\") {\r",
+									"                produtoEncontrado = true;\r",
+									"\r",
+									"                if (produto.price === 179.99) {\r",
+									"                    precoCorreto = true;\r",
+									"                }\r",
+									"            }\r",
+									"        });\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Produto 'Beats Studio 2 Over-Ear Matte Black Headphones' está presente\", function () {\r",
+									"    pm.expect(produtoEncontrado).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Preço do produto está correto (179.99)\", function () {\r",
+									"    pm.expect(precoCorreto).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}{{products_endpoint}}/search?name=Beats Studio 2 Over-Ear Matte Black Headphones",
+							"host": [
+								"{{url}}{{products_endpoint}}"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Beats Studio 2 Over-Ear Matte Black Headphones"
+								},
+								{
+									"key": "productId",
+									"value": "15",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Campo 'success' é true\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"productId\": 9999,\r\n  \"productName\": \"HyperX Cloud Alpha Gaming Headset\",\r\n  \"description\": \"Headset gamer com som surround, microfone removível e estrutura de alumínio\",\r\n  \"categoryId\": 2,\r\n  \"price\": 499.90,\r\n  \"imageUrl\": \"hyperx-cloud-alpha.jpg\",\r\n  \"images\": [\r\n    \"hyperx-cloud-alpha-1.jpg\",\r\n    \"hyperx-cloud-alpha-2.jpg\"\r\n  ],\r\n  \"productStatus\": \"Available\",\r\n  \"attributes\": [\r\n    {\r\n      \"attributeName\": \"Conectividade\",\r\n      \"attributeValue\": \"P3 + Adaptador USB\"\r\n    },\r\n    {\r\n      \"attributeName\": \"Compatibilidade\",\r\n      \"attributeValue\": \"PC, PS4, PS5, Xbox\"\r\n    }\r\n  ],\r\n  \"colors\": [\r\n    {\r\n      \"code\": \"#000000\",\r\n      \"inStock\": 25,\r\n      \"name\": \"Black\"\r\n    },\r\n    {\r\n      \"code\": \"#ff0000\",\r\n      \"inStock\": 10,\r\n      \"name\": \"Red\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{products_endpoint}}",
+							"host": [
+								"{{url}}{{products_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
