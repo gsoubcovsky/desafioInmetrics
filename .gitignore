@@ -1,2 +1,5 @@
-web/results/**
-api/results/**
+web/results/*
+api/results/*
+
+!web/results/.gitkeep
+!api/results/.gitkeep
