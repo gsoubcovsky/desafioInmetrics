@@ -3,6 +3,8 @@ Library                                         SeleniumLibrary
 Library                                         RequestsLibrary
 Library                                         Collections
 Library                                         String
+Library                                         OperatingSystem
+Library                                         Process
 Resource                                        ../pageObjects/homepage/homepage_po.resource
 Resource                                        ../pageObjects/homepage/login_po.resource
 Resource                                        ../pageObjects/order/order_po.resource
@@ -13,7 +15,7 @@ Resource                                        ../../api/keywords/accountServic
 
 *** Variables ***
 ${URL}                                          https://advantageonlineshopping.com/
-${BROWSER}                                      Chrome                #headlesschrome
+${BROWSER}                                      headlesschrome
 
 *** Keywords ***
 Open Browser to Home Page
@@ -31,3 +33,5 @@ Check if the element exists and is visible at the page
     Wait Until Page Contains Element            ${locator}
     Wait Until Element Is Visible               ${locator}
     Wait Until Element Is Enabled               ${locator}
+Save WEB Results to Database
+    Run Process                                 python          ../../utils/salvar_resultados.py
