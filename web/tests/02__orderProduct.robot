@@ -2,8 +2,7 @@
 Resource                                        ../keywords/order/order_kw.resource
 Suite Setup                                     the user creates an ADMIN account
 Suite Teardown          Run Keywords            the user generate the authentication token            AND
-...                                             the user deletes an account                           AND
-...                                             Save WEB Results to Database
+...                                             the user deletes an account
 Test Setup              Run Keywords            Open Browser to Home Page                             AND
 ...                                             Login into the Advantage Website
 Documentation                                   This test suite validates the product search and add-to-cart functionalities on the Advantage Online Shopping website.

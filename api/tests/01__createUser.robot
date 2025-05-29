@@ -1,6 +1,5 @@
 *** Settings ***
 Resource              ../keywords/accountService/createAccount_kw.resource
-Suite Teardown        Save API Results to Database
 Documentation         This test suite is responsible for creating an ADMIN user account through the API.
 ...                   
 ...                   - It includes the necessary resource to handle account creation.

@@ -33,5 +33,3 @@ Check if the element exists and is visible at the page
     Wait Until Page Contains Element            ${locator}
     Wait Until Element Is Visible               ${locator}
     Wait Until Element Is Enabled               ${locator}
-Save WEB Results to Database
-    Run Process                                 python          ../../utils/salvar_resultados.py

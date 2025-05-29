@@ -94,11 +94,19 @@ Os arquivos de evidência serão gerados automaticamente em `api/results` e `web
 
 ## 💾 Banco de Dados
 
-Após a execução, os resultados são gravados automaticamente em um banco de dados SQLite.
+Após a execução dos testes, é necessário executar manualmente o script salvar_resultados.py, localizado na pasta utils da raiz do projeto, para criar e atualizar o arquivo do banco de dados SQLite.
+Importante: O arquivo de banco de dados não é mais criado automaticamente pelo teardown da suíte devido a limitações de uso do SQLite durante a execução do Robot Framework.
+
+**Para salvar os resultados no banco:**
+
+```bash
+cd utils
+python salvar_resultados.py
+```
 
 - 📂 Script responsável: `utils/salvar_resultados.py`
-- 📘 Banco gerado: `execution_results.db`
-- 🔁 Integração automática via `Suite Teardown`
+- 📘 Banco gerado: `resultados_execucao.db`
+- 🔁 O script lê os arquivos output.xml dos módulos api/results e web/results, registrando cada execução no banco
 
 A base armazena:
 - Caminhos dos relatórios

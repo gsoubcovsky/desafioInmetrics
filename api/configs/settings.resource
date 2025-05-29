@@ -35,5 +35,3 @@ Create Headers with Authentication
     ...                            Content-Type=application/json
     ...                            Authorization=Bearer ${token}
     RETURN                         ${headers}
-Save API Results to Database
-    Run Process                                 python          ../../utils/salvar_resultados.py

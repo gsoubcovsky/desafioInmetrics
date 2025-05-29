@@ -1,6 +1,5 @@
 *** Settings ***
 Resource              ../keywords/accountService/deleteAccount_kw.resource
-Suite Teardown        Save API Results to Database
 Documentation         This test suite is responsible for deleting a user account through the API.
 ...                   
 ...                   - It includes the resource to handle the delete account functionality.
