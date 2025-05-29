@@ -1,76 +1,141 @@
-import os
-import shutil
-import sqlite3
 import xml.etree.ElementTree as ET
-from datetime import datetime
+import os
+import sqlite3
 
-# Configurações
-paths = [
-    ("api/results", "API"),
-    ("web/results", "WEB")
-]
-banco_dados = "execucoes_teste.db"
-pasta_destino = "logs_salvos"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Criação do banco e tabela
-conn = sqlite3.connect(banco_dados)
+# Caminhos para os arquivos de resultado
+CAMINHOS = {
+    "WEB": os.path.join(BASE_DIR, "../web/results/output.xml"),
+    "API": os.path.join(BASE_DIR, "../api/results/output.xml")
+}
+
+# Caminho para o banco
+CAMINHO_DB = os.path.join(BASE_DIR, "resultados_execucao.db")
+
+# Conexão com o banco
+conn = sqlite3.connect(CAMINHO_DB)
 cursor = conn.cursor()
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS execucoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    origem TEXT,
-    nome_teste TEXT,
-    status TEXT,
-    data_execucao TEXT,
-    caminho_log TEXT,
-    caminho_report TEXT
-)
-""")
 
-# Função para processar resultados
-def processar_resultado(pasta, origem):
-    output_xml = os.path.join(pasta, "output.xml")
-    log_html = os.path.join(pasta, "log.html")
-    report_html = os.path.join(pasta, "report.html")
+# Criação das duas tabelas
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS execucoes_web (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        suite TEXT,
+        total_testes INTEGER,
+        testes_passaram INTEGER,
+        testes_falharam INTEGER,
+        inicio TEXT,
+        fim TEXT,
+        caminho_arquivo TEXT
+    )
+''')
 
-    if not os.path.exists(output_xml):
-        print(f"[!] Arquivo não encontrado: {output_xml}")
-        return
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS execucoes_api (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        suite TEXT,
+        total_testes INTEGER,
+        testes_passaram INTEGER,
+        testes_falharam INTEGER,
+        inicio TEXT,
+        fim TEXT,
+        caminho_arquivo TEXT
+    )
+''')
 
-    tree = ET.parse(output_xml)
+def processar_resultado(projeto, caminho):
+    if not os.path.exists(caminho):
+        print(f"[!] Arquivo não encontrado: {caminho}")
+        return []
+
+    tree = ET.parse(caminho)
     root = tree.getroot()
 
-    # Nome e data da suite
-    suites = root.findall(".//suite")
-    data_execucao = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    resultados = []
 
-    for suite in suites:
-        suite_name = suite.attrib.get("name")
-        tests = suite.findall(".//test")
+    # Itera apenas pelas suítes que têm ao menos um <test>
+    for suite in root.iter('suite'):
+        if suite.find('test') is None:
+            continue
+
+        suite_name = suite.attrib.get('name', 'Desconhecida')
+        tests = suite.findall('test')
+        total = len(tests)
+        passed = failed = 0
+
+        # Conta status individuais de cada <test>
         for test in tests:
-            test_name = test.attrib.get("name")
-            status = test.find("status").attrib.get("status")
+            status_elem = test.find('status')
+            status = (status_elem.attrib.get('status','').upper() 
+                      if status_elem is not None else '')
+            if status == "PASS":
+                passed += 1
+            elif status == "FAIL":
+                failed += 1
 
-            # Copiar log/report com nome único
-            destino_log = f"{pasta_destino}/{origem}_{test_name}_log.html"
-            destino_report = f"{pasta_destino}/{origem}_{test_name}_report.html"
-            shutil.copy(log_html, destino_log)
-            shutil.copy(report_html, destino_report)
+        # Pega o status final da suíte (direct child <status>)
+        suite_status_elem = suite.find('status')
+        suite_status = (suite_status_elem.attrib.get('status','').upper() 
+                        if suite_status_elem is not None else '')
 
-            # Inserir no banco
-            cursor.execute("""
-                INSERT INTO execucoes (origem, nome_teste, status, data_execucao, caminho_log, caminho_report)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (origem, test_name, status, data_execucao, destino_log, destino_report))
-            print(f"[✓] Teste '{test_name}' ({origem}) salvo no banco.")
+        # Se a suíte como um todo falhou, contamos todos os testes como falhados
+        if suite_status == "FAIL":
+            passed = 0
+            failed = total
 
-# Cria pasta de logs se não existir
-os.makedirs(pasta_destino, exist_ok=True)
+        # Extrai timestamps de início/fim da suíte
+        if suite_status_elem is not None:
+            inicio = suite_status_elem.attrib.get('starttime',
+                       suite_status_elem.attrib.get('start',''))
+            fim    = suite_status_elem.attrib.get('endtime',
+                       suite_status_elem.attrib.get('end',
+                         suite_status_elem.attrib.get('elapsed','')))
+        else:
+            inicio = fim = ''
 
-# Processa todas as pastas configuradas
-for path, origem in paths:
-    processar_resultado(path, origem)
+        # Insere no banco
+        cursor.execute(f'''
+            INSERT INTO execucoes_{projeto.lower()} (
+                suite, total_testes, testes_passaram, testes_falharam,
+                inicio, fim, caminho_arquivo
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            suite_name,
+            total,
+            passed,
+            failed,
+            inicio,
+            fim,
+            caminho
+        ))
+
+        resultados.append({
+            "projeto": projeto,
+            "suite": suite_name,
+            "total": total,
+            "passed": passed,
+            "failed": failed,
+            "inicio": inicio,
+            "fim": fim
+        })
+
+    return resultados
+
+# Processa WEB e API
+resumos = []
+for projeto, caminho in CAMINHOS.items():
+    resumos.extend(processar_resultado(projeto, caminho))
 
 conn.commit()
 conn.close()
-print("\n[✓] Todos os resultados foram salvos no banco.")
+
+# Exibe resumo no terminal
+print("\n✅ Resumo das execuções registradas:\n")
+for r in resumos:
+    print(f"Projeto: {r['projeto']}")
+    print(f"Suite: {r['suite']}")
+    print(f"Total de Testes: {r['total']}")
+    print(f"Passaram: {r['passed']} | Falharam: {r['failed']}")
+    print(f"Início: {r['inicio']} | Fim: {r['fim']}")
+    print("-" * 50)
