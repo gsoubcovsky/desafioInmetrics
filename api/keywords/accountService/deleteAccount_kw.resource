@@ -1,5 +1,4 @@
 *** Settings ***
-Resource        ../../pageObjects/accountService/deleteAccount_po.resource
 Resource        ../../configs/settings.resource
 
 *** Keywords ***
@@ -21,6 +20,5 @@ Delete an existing account
 
     ${reason}               Set Variable                  ${response.json()["statusMessage"]["reason"]}
     Should Match Regexp     ${reason}                     .*deleted completely.*
-
 the user deletes an account
     Delete an existing account    ${rqst_userId}    ${URL}${ACCOUNTSERVICE_EDP}/delete

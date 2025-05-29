@@ -20,6 +20,7 @@ ${BROWSER}                                      headlesschrome
 *** Keywords ***
 Open Browser to Home Page
     Open Browser                                ${URL}    ${BROWSER}
+    Set Window Size                             1920    1080
     Maximize Browser Window
     Set Selenium Speed                          0.1s
     ${title}                                    Get Title

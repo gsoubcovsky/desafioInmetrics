@@ -4,6 +4,9 @@ Library         Collections
 Library         FakerLibrary
 Library         OperatingSystem
 Library         Process
+Resource        ../pageObjects/accountService/createAccount_po.resource
+Resource        ../pageObjects/accountService/deleteAccount_po.resource
+Resource        ../pageObjects/accountService/generateToken_po.resource
 
 *** Variables ***
 ${URL}             https://www.advantageonlineshopping.com

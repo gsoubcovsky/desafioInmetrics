@@ -1,5 +1,4 @@
 *** Settings ***
-Resource        ../../pageObjects/accountService/createAccount_po.resource
 Resource        ../../configs/settings.resource
 
 *** Keywords ***
@@ -50,12 +49,12 @@ Create an Account
 
     ${userId}               Set Variable                      ${response.json()["response"]["userId"]}
     ${reason}               Set Variable                      ${response.json()["response"]["reason"]}
-    Should Be Equal         ${reason}                         New user created successfully.
+    Should Be Equal          ${reason}                         New user created successfully.
 
-    Set Global Variable      ${rqst_username}                 ${loginName}
-    Set Global Variable      ${rqst_pass}                     ${password}
-    Set Global Variable      ${rqst_email}                    ${email}
-    Set Global Variable      ${rqst_userId}                   ${userId}
+    Set Global Variable      \${rqst_username}                 ${loginName}
+    Set Global Variable      \${rqst_pass}                     ${password}
+    Set Global Variable      \${rqst_email}                    ${email}
+    Set Global Variable      \${rqst_userId}                   ${userId}
 
     RETURN                   ${rqst_userId}
 

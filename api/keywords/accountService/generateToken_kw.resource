@@ -1,5 +1,4 @@
 *** Settings ***
-Resource        ../../pageObjects/accountService/generateToken_po.resource
 Resource        ../../configs/settings.resource
 
 

@@ -8,5 +8,5 @@ Documentation         This test suite is responsible for deleting a user account
 ...                   Expected result: The specified account is deleted completely and permanently
 
 *** Test Cases ***
-Create an Admin account
+Delete an Admin account
     Given the user deletes an account
