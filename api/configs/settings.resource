@@ -2,6 +2,8 @@
 Library         RequestsLibrary
 Library         Collections
 Library         FakerLibrary
+Library         OperatingSystem
+Library         Process
 
 *** Variables ***
 ${URL}             https://www.advantageonlineshopping.com
@@ -33,3 +35,5 @@ Create Headers with Authentication
     ...                            Content-Type=application/json
     ...                            Authorization=Bearer ${token}
     RETURN                         ${headers}
+Save API Results to Database
+    Run Process                                 python          ../../utils/salvar_resultados.py

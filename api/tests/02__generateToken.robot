@@ -1,13 +1,12 @@
 *** Settings ***
 Resource              ../keywords/accountService/generateToken_kw.resource
-Documentation           Test: Generate access token to manage the API
-...                     Objective: Ensure the user can successfully authenticate and receive a valid JWT token.
-...                     Pre-conditions: The user must have valid login, email, and password credentials.
-...                     Steps:
-...                              1. Send a POST request to /accountrest/api/v1/login with credentials.
-...                              2. Validate that the status code is 200.
-...                              3. Validate that the 'token' field exists and is not empty.
-...                     Expected result: The authentication token is saved successfully in the variable TOKEN.
+Suite Teardown        Save API Results to Database
+Documentation         This test suite handles the generation of an authentication token via API.
+...                   
+...                   - It imports the necessary resource to perform the token request.
+...                   - The test validates that a token is returned successfully by the endpoint.
+...                   
+...                   Expected result: A valid token is received and stored for further API operations.
 
 *** Test Cases ***
 Generate access token to manage the api

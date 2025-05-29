@@ -31,8 +31,7 @@
 									"    pm.expect(jsonData.statusMessage.token).to.be.a(\"string\").and.not.empty;\r",
 									"});\r",
 									"\r",
-									"const json = pm.response.json();\r",
-									"pm.environment.set(\"authToken\", json.statusMessage.token);"
+									"pm.environment.set(\"authToken\", jsonData.statusMessage.token);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -67,9 +66,129 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}{{accountService_endpoint}}",
+							"raw": "{{url}}{{accountService_endpoint}}{{login_endpoint}}",
 							"host": [
-								"{{url}}{{accountService_endpoint}}"
+								"{{url}}{{accountService_endpoint}}{{login_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Create Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Campo 'success' é true\", function () {\r",
+									"    pm.expect(jsonData.response.success).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Token JWT foi retornado\", function () {\r",
+									"    pm.expect(jsonData.response.token).to.be.undefined;\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"userId\", jsonData.response.userId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "/",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountType\": \"ADMIN\",\r\n  \"address\": \"Av. Teste\",\r\n  \"allowOffersPromotion\": true,\r\n  \"aobUser\": true,\r\n  \"cityName\": \"teste\",\r\n  \"country\": \"AUSTRALIA_AU\",\r\n  \"email\": \"teste@teste.com\",\r\n  \"firstName\": \"Gab\",\r\n  \"lastName\": \"Lima\",\r\n  \"loginName\": \"gaabz\",\r\n  \"password\": \"123456@Soub!\",\r\n  \"phoneNumber\": \"11911344455\",\r\n  \"stateProvince\": \"SPU\",\r\n  \"zipcode\": \"09651234\"\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}{{accountService_endpoint}}{{registerAccount_endpoint}}",
+							"host": [
+								"{{url}}{{accountService_endpoint}}{{registerAccount_endpoint}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Delete Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code é 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Conta deletada!\", function () {\r",
+									"    pm.expect(jsonData.statusMessage.success).to.be.true;\r",
+									"    pm.expect(jsonData.statusMessage.reason).to.eql(\"Account(orders, address, payment, account) deleted completely and permanently \");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountId\": {{userId}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}{{accountService_endpoint}}{{deleteAccount_endpoint}}",
+							"host": [
+								"{{url}}{{accountService_endpoint}}{{deleteAccount_endpoint}}"
 							]
 						}
 					},
@@ -198,7 +317,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"productId\": 9999,\r\n  \"productName\": \"HyperX Cloud Alpha Gaming Headset\",\r\n  \"description\": \"Headset gamer com som surround, microfone removível e estrutura de alumínio\",\r\n  \"categoryId\": 2,\r\n  \"price\": 499.90,\r\n  \"imageUrl\": \"hyperx-cloud-alpha.jpg\",\r\n  \"images\": [\r\n    \"hyperx-cloud-alpha-1.jpg\",\r\n    \"hyperx-cloud-alpha-2.jpg\"\r\n  ],\r\n  \"productStatus\": \"Available\",\r\n  \"attributes\": [\r\n    {\r\n      \"attributeName\": \"Conectividade\",\r\n      \"attributeValue\": \"P3 + Adaptador USB\"\r\n    },\r\n    {\r\n      \"attributeName\": \"Compatibilidade\",\r\n      \"attributeValue\": \"PC, PS4, PS5, Xbox\"\r\n    }\r\n  ],\r\n  \"colors\": [\r\n    {\r\n      \"code\": \"#000000\",\r\n      \"inStock\": 25,\r\n      \"name\": \"Black\"\r\n    },\r\n    {\r\n      \"code\": \"#ff0000\",\r\n      \"inStock\": 10,\r\n      \"name\": \"Red\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"attributes\": [\r\n    {\r\n      \"attributeName\": \"Conectividade\",\r\n      \"attributeValue\": \"Cabo trançado P3 + adaptador USB\"\r\n    },\r\n    {\r\n      \"attributeName\": \"Compatibilidade\",\r\n      \"attributeValue\": \"PC, PS4, PS5, Xbox\"\r\n    }\r\n  ],\r\n  \"categoryId\": 2,\r\n  \"colors\": [\r\n    {\r\n      \"code\": \"#000000\",\r\n      \"inStock\": 20,\r\n      \"name\": \"Black\"\r\n    },\r\n    {\r\n      \"code\": \"#ff0000\",\r\n      \"inStock\": 15,\r\n      \"name\": \"Red\"\r\n    }\r\n  ],\r\n  \"description\": \"Headset gamer HyperX Cloud Alpha com estrutura de alumínio, áudio estéreo de alta fidelidade e espumas de memória premium.\",\r\n  \"imageUrl\": \"hyperx-cloud-alpha.jpg\",\r\n  \"images\": [\r\n    \"hyperx-cloud-alpha-front.jpg\",\r\n    \"hyperx-cloud-alpha-side.jpg\"\r\n  ],\r\n  \"price\": 599.90,\r\n  \"productId\": 10002,\r\n  \"productName\": \"HyperX Cloud Alpha Gaming Headset\",\r\n  \"productStatus\": \"IN_STOCK\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

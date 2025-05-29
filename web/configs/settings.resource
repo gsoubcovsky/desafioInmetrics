@@ -1,18 +1,21 @@
 *** Settings ***
-Library        SeleniumLibrary
-Library        RequestsLibrary
-Library        Collections
-Library        String
-Resource       ../pageObjects/homepage/homepage_po.resource
-Resource       ../pageObjects/homepage/login_po.resource
-Resource       ../pageObjects/order/order_po.resource
-Resource        ../../api/keywords/accountService/createAccount_kw.resource
-Resource        ../../api/keywords/accountService/generateToken_kw.resource
-Resource        ../../api/keywords/accountService/deleteAccount_kw.resource
+Library                                         SeleniumLibrary
+Library                                         RequestsLibrary
+Library                                         Collections
+Library                                         String
+Library                                         OperatingSystem
+Library                                         Process
+Resource                                        ../pageObjects/homepage/homepage_po.resource
+Resource                                        ../pageObjects/homepage/login_po.resource
+Resource                                        ../pageObjects/order/order_po.resource
+Resource                                        ../pageObjects/checkout/checkout_po.resource
+Resource                                        ../../api/keywords/accountService/createAccount_kw.resource
+Resource                                        ../../api/keywords/accountService/generateToken_kw.resource
+Resource                                        ../../api/keywords/accountService/deleteAccount_kw.resource
 
 *** Variables ***
-${URL}              https://advantageonlineshopping.com/
-${BROWSER}          Chrome                #headlesschrome
+${URL}                                          https://advantageonlineshopping.com/
+${BROWSER}                                      headlesschrome
 
 *** Keywords ***
 Open Browser to Home Page
@@ -26,7 +29,9 @@ Open Browser to Home Page
     Wait Until Element Is Visible               ${HOMEPAGE_HEADER}
 
 Check if the element exists and is visible at the page
-    [Arguments]            ${locator}
-    Wait Until Page Contains Element         ${locator}
-    Wait Until Element Is Visible            ${locator}
-    Wait Until Element Is Enabled            ${locator}
+    [Arguments]                                 ${locator}
+    Wait Until Page Contains Element            ${locator}
+    Wait Until Element Is Visible               ${locator}
+    Wait Until Element Is Enabled               ${locator}
+Save WEB Results to Database
+    Run Process                                 python          ../../utils/salvar_resultados.py
