@@ -14,17 +14,21 @@ Resource                                        ../../api/keywords/accountServic
 Resource                                        ../../api/keywords/accountService/deleteAccount_kw.resource
 
 *** Variables ***
-${URL}                                          https://advantageonlineshopping.com/
-${BROWSER}                                      headlesschrome
+${URL}                                          https://advantageonlineshopping.com
+${BROWSER}                                      chrome
+${HEADLESS}                                     True
+${WINDOW_SIZE_ARG}                              --window-size=1920,1080
+${HEADLESS_ARG}                                 --headless=new
 
 *** Keywords ***
 Open Browser to Home Page
-    Open Browser                                ${URL}    ${BROWSER}
-    Set Window Size                             1920    1080
-    Maximize Browser Window
+    ${options}=                                 Evaluate    sys.modules['selenium.webdriver'].ChromeOptions()    sys
+    Call Method                                 ${options}    add_argument    ${WINDOW_SIZE_ARG}
+    Run Keyword If                              '${HEADLESS}'=='True'    Call Method    ${options}    add_argument    ${HEADLESS_ARG}
+    Open Browser                                ${URL}    ${BROWSER}    options=${options}
     Set Selenium Speed                          0.1s
-    ${title}                                    Get Title
-    ${cleaned}                                  Evaluate    re.sub(r'\\s+', ' ', '''${title}''').replace(u'\u00A0', '').strip()    re
+    ${title}=                                   Get Title
+    ${cleaned}=                                 Evaluate    re.sub(r'\s+', ' ', '''${title}''').replace(u'\u00A0', '').strip()    re
     Should Be Equal As Strings                  ${cleaned}    Advantage Shopping
     Wait Until Page Contains Element            ${HOMEPAGE_HEADER}
     Wait Until Element Is Visible               ${HOMEPAGE_HEADER}

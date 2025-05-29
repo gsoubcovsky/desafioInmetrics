@@ -80,9 +80,11 @@ robot -d results tests/
 
 ### 🔹 Testes Web
 
+**Caso queira rodar os testes WEB em headless mude o valor da variavel para True ex: HEADLESS:True, caso não queira executar em HEADLESS:False**
+
 ```bash
 cd web
-robot -d results tests/
+robot --variable HEADLESS:True -d results tests/
 ```
 
 Os arquivos de evidência serão gerados automaticamente em `api/results` e `web/results`:
