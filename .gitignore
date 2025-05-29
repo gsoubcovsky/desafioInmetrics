@@ -3,3 +3,5 @@ api/results/*
 
 !web/results/.gitkeep
 !api/results/.gitkeep
+
+**/interactive_console_output.xml

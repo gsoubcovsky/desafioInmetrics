@@ -17,7 +17,6 @@ Wait Until AutoComplete Is Fully Visible
     Wait Until Keyword Succeeds    15s    0.2s    AutoComplete Should Be Fully Visible
 
 the user searchs for ${product} product
-    #Check if the element exists and is visible at the page            ${SEARCH_FIELD}
     Wait Until AutoComplete Is Fully Visible
     Input Text                                                        ${SEARCH_FIELD}                   ${product}
     Check if the element exists and is visible at the page            ${SEARCH_POPUP}
@@ -45,3 +44,10 @@ the user chooses the product details and adds ${quantity} of them to the cart
 the user verifies if the product is in the cart
     Check if the element exists and is visible at the page            ${CHECKOUTPAGE_ELMT}
     Check if the element exists and is visible at the page            ${PRODUCTATCHECKOUT_ELMT}
+
+the user adds the product to the cart
+    the user clicks in the search button
+    the user searchs for BEATS STUDIO 2 OVER-EAR MATTE BLACK HEADPHONES product
+    the user selects the product in the search bar
+    the user chooses the product details and adds 1 of them to the cart
+    the user verifies if the product is in the cart
